@@ -8,7 +8,7 @@ import (
 )
 
 func issueJWT() (string, error) {
-	privateKeyData, err := os.ReadFile("private.key")
+	privateKeyData, err := os.ReadFile("../private.key")
 	if err != nil {
 		return "", err
 	}

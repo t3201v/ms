@@ -9,6 +9,7 @@ import (
 	"strings"
 
 	"github.com/golang-jwt/jwt/v5"
+	"github.com/grpc-ecosystem/go-grpc-middleware/v2/interceptors"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
 )
@@ -16,21 +17,23 @@ import (
 var (
 	ErrMissingToken = errors.New("missing or invalid Authorization header")
 
-	skipMethods = map[string]bool{
-		"/grpc.health.v1.Health/Check":                                   true,
-		"/grpc.health.v1.Health/List":                                    true,
-		"/grpc.health.v1.Health/Watch":                                   true,
-		"/grpc.reflection.v1alpha.ServerReflection/ServerReflectionInfo": true,
-		"/resource.ResourceService/SayHello":                             true,
-		"/resource/say":                                                  true,
-		"/resource/say2":                                                 false,
-		"/resource.ResourceService/SayHello2":                            false,
+	skipMethods = map[string]struct{}{
+		"/resource/say2":               {},
+		"/grpc.health.v1.Health/Check": {},
+		"/grpc.health.v1.Health/List":  {},
+		"/grpc.health.v1.Health/Watch": {},
+		"/grpc.reflection.v1alpha.ServerReflection/ServerReflectionInfo": {},
 	}
 )
 
+func SkipOnes(_ context.Context, callMeta interceptors.CallMeta) bool {
+	_, shouldSkip := skipMethods[callMeta.FullMethod()]
+	return !shouldSkip
+}
+
 // Load your public key (once, globally)
 func LoadPublicKey() (*rsa.PublicKey, error) {
-	data, err := os.ReadFile("public.key")
+	data, err := os.ReadFile("../public.key")
 	if err != nil {
 		return nil, err
 	}
@@ -45,10 +48,6 @@ func AuthInterceptor(publicKey *rsa.PublicKey) grpc.UnaryServerInterceptor {
 		info *grpc.UnaryServerInfo,
 		handler grpc.UnaryHandler,
 	) (any, error) {
-		if skipMethods[info.FullMethod] {
-			return handler(ctx, req)
-		}
-
 		md, ok := metadata.FromIncomingContext(ctx)
 		if !ok {
 			return nil, ErrMissingToken

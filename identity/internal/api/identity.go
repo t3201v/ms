@@ -3,14 +3,15 @@ package api
 import (
 	"context"
 
-	pb "github.com/t3201v/ms/identity/gen/identity/proto"
-	resource "github.com/t3201v/ms/identity/gen/resource/proto"
-	"github.com/t3201v/ms/identity/internal/log"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
+
+	pb "github.com/t3201v/ms/identity/gen/identity/proto"
+	resource "github.com/t3201v/ms/identity/gen/resource/proto"
+	"github.com/t3201v/ms/identity/internal/log"
 )
 
 type IdentityServer struct {
@@ -21,6 +22,7 @@ type IdentityServer struct {
 func (i *IdentityServer) Login(ctx context.Context, request *pb.LoginRequest) (*pb.LoginResponse, error) {
 	token, err := issueJWT()
 	if err != nil {
+		log.Error(ctx, "Error issuing JWT", "error", err)
 		return nil, status.Errorf(codes.Internal, "failed to issue token: %v", err)
 	}
 

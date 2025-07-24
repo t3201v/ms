@@ -4,6 +4,7 @@ go 1.24.5
 
 require (
 	github.com/golang-jwt/jwt/v5 v5.2.3
+	github.com/grpc-ecosystem/go-grpc-middleware/v2 v2.3.2
 	github.com/joho/godotenv v1.5.1
 	github.com/lestrrat-go/jwx/v3 v3.0.8
 	github.com/lib/pq v1.10.9

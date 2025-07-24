@@ -71,5 +71,22 @@ clean:
 install-tools:
 	go install google.golang.org/protobuf/cmd/protoc-gen-go@latest
 	go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@latest
+	go install github.com/pressly/goose/v3/cmd/goose@latest
+	go install github.com/sqlc-dev/sqlc/cmd/sqlc@latest
 
-.PHONY: proto-gen descriptors combined-descriptor clean install-tools
+keys:
+	openssl genpkey -algorithm RSA -out private.key -pkeyopt rsa_keygen_bits:2048
+	openssl rsa -in private.key -pubout -out public.key
+	cd identity && go run ./cmd/jwks/main.go
+
+# for debugging, also change svc domain to host.docker.internal for envoy cfg
+run-infra:
+	docker compose up postgres envoy -d --no-deps
+
+run-all:
+	docker compose up -d --build
+
+down:
+	docker compose down
+
+.PHONY: proto-gen descriptors combined-descriptor clean install-tools keys run-infra run-all

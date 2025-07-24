@@ -5,26 +5,27 @@ import (
 	"os"
 
 	"github.com/joho/godotenv"
+
 	"github.com/t3201v/ms/resource/internal/db/schema"
 	"github.com/t3201v/ms/resource/internal/log"
 
 	_ "github.com/lib/pq"
 )
 
-// IdentityDatabaseUrl is the environment variable for the identity database URL
-const IdentityDatabaseUrl = "IDENTITY_DATABASE_URL"
+// ResourceDatabaseUrl is the environment variable for the resource database URL
+const ResourceDatabaseUrl = "RESOURCE_DATABASE_URL"
 
 func main() {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
-	if os.Getenv(IdentityDatabaseUrl) == "" {
+	if os.Getenv(ResourceDatabaseUrl) == "" {
 		err := godotenv.Load()
 		if err != nil {
 			log.Error(ctx, "error loading .env file")
 		}
 	}
-	databaseUrl := os.Getenv(IdentityDatabaseUrl)
+	databaseUrl := os.Getenv(ResourceDatabaseUrl)
 	log.Config(log.LevelDebug, log.LevelDebug, os.Stdout)
 	log.Debug(ctx, "database", "url", databaseUrl)
 

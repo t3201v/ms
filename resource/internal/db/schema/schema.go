@@ -7,6 +7,7 @@ import (
 	"fmt"
 
 	"github.com/pressly/goose/v3"
+
 	"github.com/t3201v/ms/resource/internal/log"
 )
 

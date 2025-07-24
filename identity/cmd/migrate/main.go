@@ -5,6 +5,7 @@ import (
 	"os"
 
 	"github.com/joho/godotenv"
+
 	"github.com/t3201v/ms/identity/internal/db/schema"
 	"github.com/t3201v/ms/identity/internal/log"
 
