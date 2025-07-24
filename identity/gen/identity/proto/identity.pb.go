@@ -22,27 +22,26 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
-type HelloRequest struct {
+type LoginRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Name          string                 `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
-func (x *HelloRequest) Reset() {
-	*x = HelloRequest{}
+func (x *LoginRequest) Reset() {
+	*x = LoginRequest{}
 	mi := &file_identity_proto_identity_proto_msgTypes[0]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *HelloRequest) String() string {
+func (x *LoginRequest) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*HelloRequest) ProtoMessage() {}
+func (*LoginRequest) ProtoMessage() {}
 
-func (x *HelloRequest) ProtoReflect() protoreflect.Message {
+func (x *LoginRequest) ProtoReflect() protoreflect.Message {
 	mi := &file_identity_proto_identity_proto_msgTypes[0]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -54,39 +53,32 @@ func (x *HelloRequest) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use HelloRequest.ProtoReflect.Descriptor instead.
-func (*HelloRequest) Descriptor() ([]byte, []int) {
+// Deprecated: Use LoginRequest.ProtoReflect.Descriptor instead.
+func (*LoginRequest) Descriptor() ([]byte, []int) {
 	return file_identity_proto_identity_proto_rawDescGZIP(), []int{0}
 }
 
-func (x *HelloRequest) GetName() string {
-	if x != nil {
-		return x.Name
-	}
-	return ""
-}
-
-type HelloReply struct {
+type LoginResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Message       string                 `protobuf:"bytes,1,opt,name=message,proto3" json:"message,omitempty"`
+	Token         string                 `protobuf:"bytes,1,opt,name=token,proto3" json:"token,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
-func (x *HelloReply) Reset() {
-	*x = HelloReply{}
+func (x *LoginResponse) Reset() {
+	*x = LoginResponse{}
 	mi := &file_identity_proto_identity_proto_msgTypes[1]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *HelloReply) String() string {
+func (x *LoginResponse) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*HelloReply) ProtoMessage() {}
+func (*LoginResponse) ProtoMessage() {}
 
-func (x *HelloReply) ProtoReflect() protoreflect.Message {
+func (x *LoginResponse) ProtoReflect() protoreflect.Message {
 	mi := &file_identity_proto_identity_proto_msgTypes[1]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -98,14 +90,14 @@ func (x *HelloReply) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use HelloReply.ProtoReflect.Descriptor instead.
-func (*HelloReply) Descriptor() ([]byte, []int) {
+// Deprecated: Use LoginResponse.ProtoReflect.Descriptor instead.
+func (*LoginResponse) Descriptor() ([]byte, []int) {
 	return file_identity_proto_identity_proto_rawDescGZIP(), []int{1}
 }
 
-func (x *HelloReply) GetMessage() string {
+func (x *LoginResponse) GetToken() string {
 	if x != nil {
-		return x.Message
+		return x.Token
 	}
 	return ""
 }
@@ -114,14 +106,12 @@ var File_identity_proto_identity_proto protoreflect.FileDescriptor
 
 const file_identity_proto_identity_proto_rawDesc = "" +
 	"\n" +
-	"\x1didentity/proto/identity.proto\x12\bservicea\x1a\x1cgoogle/api/annotations.proto\"\"\n" +
-	"\fHelloRequest\x12\x12\n" +
-	"\x04name\x18\x01 \x01(\tR\x04name\"&\n" +
-	"\n" +
-	"HelloReply\x12\x18\n" +
-	"\amessage\x18\x01 \x01(\tR\amessage2^\n" +
-	"\bServiceA\x12R\n" +
-	"\bSayHello\x12\x16.servicea.HelloRequest\x1a\x14.servicea.HelloReply\"\x18\x82\xd3\xe4\x93\x02\x12:\x01*\"\r/identity/sayB\x1fZ\x1dgithub.com/t3201v/ms/identityb\x06proto3"
+	"\x1didentity/proto/identity.proto\x12\bidentity\x1a\x1cgoogle/api/annotations.proto\"\x0e\n" +
+	"\fLoginRequest\"%\n" +
+	"\rLoginResponse\x12\x14\n" +
+	"\x05token\x18\x01 \x01(\tR\x05token2c\n" +
+	"\vAuthService\x12T\n" +
+	"\x05Login\x12\x16.identity.LoginRequest\x1a\x17.identity.LoginResponse\"\x1a\x82\xd3\xe4\x93\x02\x14:\x01*\"\x0f/identity/loginB\x1fZ\x1dgithub.com/t3201v/ms/identityb\x06proto3"
 
 var (
 	file_identity_proto_identity_proto_rawDescOnce sync.Once
@@ -137,12 +127,12 @@ func file_identity_proto_identity_proto_rawDescGZIP() []byte {
 
 var file_identity_proto_identity_proto_msgTypes = make([]protoimpl.MessageInfo, 2)
 var file_identity_proto_identity_proto_goTypes = []any{
-	(*HelloRequest)(nil), // 0: servicea.HelloRequest
-	(*HelloReply)(nil),   // 1: servicea.HelloReply
+	(*LoginRequest)(nil),  // 0: identity.LoginRequest
+	(*LoginResponse)(nil), // 1: identity.LoginResponse
 }
 var file_identity_proto_identity_proto_depIdxs = []int32{
-	0, // 0: servicea.ServiceA.SayHello:input_type -> servicea.HelloRequest
-	1, // 1: servicea.ServiceA.SayHello:output_type -> servicea.HelloReply
+	0, // 0: identity.AuthService.Login:input_type -> identity.LoginRequest
+	1, // 1: identity.AuthService.Login:output_type -> identity.LoginResponse
 	1, // [1:2] is the sub-list for method output_type
 	0, // [0:1] is the sub-list for method input_type
 	0, // [0:0] is the sub-list for extension type_name

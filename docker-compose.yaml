@@ -10,9 +10,13 @@ services:
       - "9090:9090"
     networks:
       - grpc-network
+    volumes:
+      - ./private.key:/app/private.key:ro
     environment:
-      - PORT=9090
+      - PORT=:9090
       - SERVICE_NAME=identity
+      - RESOURCE_URL=resource-service:9090
+    command: sh -c "./entrypoint"
     healthcheck:
       test: ["CMD", "grpc_health_probe", "-addr=:9090"]
       interval: 30s
@@ -25,14 +29,17 @@ services:
       dockerfile: Dockerfile
     container_name: resource-service
     ports:
-      - "9091:9091"
+      - "9091:9090"
     networks:
       - grpc-network
+    volumes:
+      - ./public.key:/app/public.key:ro
     environment:
-      - PORT=9091
+      - PORT=:9090
       - SERVICE_NAME=resource
+    command: sh -c "./entrypoint"
     healthcheck:
-      test: ["CMD", "grpc_health_probe", "-addr=:9091"]
+      test: ["CMD", "grpc_health_probe", "-addr=:9090"]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -48,6 +55,7 @@ services:
     volumes:
       - ./descriptor:/etc/envoy/descriptors:ro
       - ./envoy.yaml:/etc/envoy/envoy.yaml:ro
+      - ./identity/jwks.json:/etc/envoy/keys/jwks.json:ro
     depends_on:
       identity-service:
         condition: service_healthy

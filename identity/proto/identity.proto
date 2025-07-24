@@ -1,23 +1,22 @@
 syntax = "proto3";
-package servicea;
+package identity;
 
 import "google/api/annotations.proto";
 
 option go_package = "github.com/t3201v/ms/identity";
 
-service ServiceA {
-  rpc SayHello (HelloRequest) returns (HelloReply) {
+service AuthService {
+  rpc Login (LoginRequest) returns (LoginResponse) {
     option (google.api.http) = {
-      post: "/identity/say"
+      post: "/identity/login"
       body: "*"
     };
-  };
+  }
 }
 
-message HelloRequest {
-  string name = 1;
+message LoginRequest {
 }
 
-message HelloReply {
-  string message = 1;
+message LoginResponse {
+  string token = 1;
 }
