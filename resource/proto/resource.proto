@@ -1,10 +1,17 @@
 syntax = "proto3";
 package serviceb;
 
+import "google/api/annotations.proto";
+
 option go_package = "github.com/t3201v/ms/resource";
 
 service ServiceB {
-  rpc SayHello (HelloRequest) returns (HelloReply);
+  rpc SayHello (HelloRequest) returns (HelloReply) {
+    option (google.api.http) = {
+      post: "/resource/say"
+      body: "*"
+    };
+  };
 }
 
 message HelloRequest {

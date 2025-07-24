@@ -3,6 +3,7 @@ module github.com/t3201v/ms/resource
 go 1.24.5
 
 require (
+	google.golang.org/genproto/googleapis/api v0.0.0-20250528174236-200df99c418a
 	google.golang.org/grpc v1.74.2
 	google.golang.org/protobuf v1.36.6
 )

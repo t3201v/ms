@@ -34,7 +34,7 @@ func main() {
 	healthServer.SetServingStatus("", grpc_health_v1.HealthCheckResponse_SERVING)
 
 	pb.RegisterServiceBServer(s, &server{})
-	fmt.Println("Server listening on port 9090")
+	fmt.Println("Server listening on port 9091")
 	if err := s.Serve(lis); err != nil {
 		log.Fatalf("failed to serve: %v", err)
 	}

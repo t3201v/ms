@@ -22,6 +22,22 @@ static_resources:
                   - name: envoy.access_loggers.stdout
                     typed_config:
                       "@type": type.googleapis.com/envoy.extensions.access_loggers.stream.v3.StdoutAccessLog
+                route_config:
+                  name: local_route
+                  virtual_hosts:
+                    - name: local_service
+                      domains: ["*"]
+                      routes:
+                        - match:
+                            prefix: "/servicea.ServiceA"
+                            grpc: {}
+                          route:
+                            cluster: identity_service
+                        - match:
+                            prefix: "/serviceb.ServiceB"
+                            grpc: {}
+                          route:
+                            cluster: resource_service
                 http_filters:
                   - name: envoy.filters.http.grpc_json_transcoder
                     typed_config:
@@ -38,31 +54,17 @@ static_resources:
                   - name: envoy.filters.http.router
                     typed_config:
                       "@type": type.googleapis.com/envoy.extensions.filters.http.router.v3.Router
-                route_config:
-                  name: local_route
-                  virtual_hosts:
-                    - name: local_service
-                      domains: ["*"]
-                      routes:
-                        - match:
-                            prefix: "/identity"
-                          route:
-                            cluster: identity_service
-                        - match:
-                            prefix: "/resource"
-                          route:
-                            cluster: resource_service
 
   clusters:
     - name: identity_service
-      connect_timeout: 0.25s
+      connect_timeout: 1.25s
       type: LOGICAL_DNS
       dns_lookup_family: V4_ONLY
       typed_extension_protocol_options:
         envoy.extensions.upstreams.http.v3.HttpProtocolOptions:
           "@type": type.googleapis.com/envoy.extensions.upstreams.http.v3.HttpProtocolOptions
           explicit_http_config:
-            http2_protocol_options: { }
+            http2_protocol_options: {}
       lb_policy: ROUND_ROBIN
       load_assignment:
         cluster_name: identity_service
@@ -75,14 +77,14 @@ static_resources:
                       port_value: 9090
 
     - name: resource_service
-      connect_timeout: 0.25s
+      connect_timeout: 1.25s
       type: LOGICAL_DNS
       dns_lookup_family: V4_ONLY
       typed_extension_protocol_options:
         envoy.extensions.upstreams.http.v3.HttpProtocolOptions:
           "@type": type.googleapis.com/envoy.extensions.upstreams.http.v3.HttpProtocolOptions
           explicit_http_config:
-            http2_protocol_options: { }
+            http2_protocol_options: {}
       lb_policy: ROUND_ROBIN
       load_assignment:
         cluster_name: resource_service

@@ -8,7 +8,8 @@ option go_package = "github.com/t3201v/ms/identity";
 service ServiceA {
   rpc SayHello (HelloRequest) returns (HelloReply) {
     option (google.api.http) = {
-      post: "/say"
+      post: "/identity/say"
+      body: "*"
     };
   };
 }
