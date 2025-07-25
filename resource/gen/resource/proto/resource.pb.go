@@ -7,6 +7,7 @@
 package resource
 
 import (
+	_ "github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-openapiv2/options"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
@@ -114,15 +115,22 @@ var File_resource_proto_resource_proto protoreflect.FileDescriptor
 
 const file_resource_proto_resource_proto_rawDesc = "" +
 	"\n" +
-	"\x1dresource/proto/resource.proto\x12\bresource\x1a\x1cgoogle/api/annotations.proto\"\"\n" +
+	"\x1dresource/proto/resource.proto\x12\bresource\x1a\x1cgoogle/api/annotations.proto\x1a.protoc-gen-openapiv2/options/annotations.proto\"\"\n" +
 	"\fHelloRequest\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\"&\n" +
 	"\n" +
 	"HelloReply\x12\x18\n" +
-	"\amessage\x18\x01 \x01(\tR\amessage2\xbb\x01\n" +
-	"\x0fResourceService\x12R\n" +
-	"\bSayHello\x12\x16.resource.HelloRequest\x1a\x14.resource.HelloReply\"\x18\x82\xd3\xe4\x93\x02\x12:\x01*\"\r/resource/say\x12T\n" +
-	"\tSayHello2\x12\x16.resource.HelloRequest\x1a\x14.resource.HelloReply\"\x19\x82\xd3\xe4\x93\x02\x13:\x01*\"\x0e/resource/say2B\x1fZ\x1dgithub.com/t3201v/ms/resourceb\x06proto3"
+	"\amessage\x18\x01 \x01(\tR\amessage2\xd0\x01\n" +
+	"\x0fResourceService\x12g\n" +
+	"\bSayHello\x12\x16.resource.HelloRequest\x1a\x14.resource.HelloReply\"-\x92A\x12b\x10\n" +
+	"\x0e\n" +
+	"\n" +
+	"BearerAuth\x12\x00\x82\xd3\xe4\x93\x02\x12:\x01*\"\r/resource/say\x12T\n" +
+	"\tSayHello2\x12\x16.resource.HelloRequest\x1a\x14.resource.HelloReply\"\x19\x82\xd3\xe4\x93\x02\x13:\x01*\"\x0e/resource/say2Bf\x92AD\x12\x1d\n" +
+	"\x14Resource Service API2\x051.0.0Z#\n" +
+	"!\n" +
+	"\n" +
+	"BearerAuth\x12\x13\b\x02\x1a\rAuthorization \x02Z\x1dgithub.com/t3201v/ms/resourceb\x06proto3"
 
 var (
 	file_resource_proto_resource_proto_rawDescOnce sync.Once

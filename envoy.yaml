@@ -29,6 +29,11 @@ static_resources:
                       domains: ["*"]
                       routes:
                         - match:
+                            prefix: "/docs"
+                          route:
+                            cluster: swagger-ui-cluster
+
+                        - match:
                             prefix: "/identity.AuthService"
                             grpc: {}
                           route:
@@ -56,7 +61,7 @@ static_resources:
                       "@type": type.googleapis.com/envoy.extensions.filters.http.jwt_authn.v3.JwtAuthentication
                       providers:
                         custom_issuer:
-                          issuer: "https://my-issuer.example.com"
+                          issuer: "https://ms-issuer.com"
                           local_jwks:
                             filename: "/etc/envoy/keys/jwks.json"
                           forward: true
@@ -112,3 +117,17 @@ static_resources:
                     socket_address:
                       address: resource-service
                       port_value: 9090
+
+    - name: swagger-ui-cluster
+      connect_timeout: 0.25s
+      type: LOGICAL_DNS
+      lb_policy: ROUND_ROBIN
+      load_assignment:
+        cluster_name: swagger-ui-cluster
+        endpoints:
+          - lb_endpoints:
+              - endpoint:
+                  address:
+                    socket_address:
+                      address: swagger-ui
+                      port_value: 8080

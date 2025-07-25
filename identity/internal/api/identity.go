@@ -20,7 +20,7 @@ type IdentityServer struct {
 }
 
 func (i *IdentityServer) Login(ctx context.Context, request *pb.LoginRequest) (*pb.LoginResponse, error) {
-	token, err := issueJWT()
+	token, err := issueJWT("", nil)
 	if err != nil {
 		log.Error(ctx, "Error issuing JWT", "error", err)
 		return nil, status.Errorf(codes.Internal, "failed to issue token: %v", err)

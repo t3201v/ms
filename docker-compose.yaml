@@ -55,6 +55,25 @@ services:
       timeout: 10s
       retries: 3
 
+
+  swagger-ui:
+    image: swaggerapi/swagger-ui:latest
+    container_name: swagger-ui
+    ports:
+      - "8081:8080"
+    networks:
+      - grpc-network
+    environment:
+      - BASE_URL=/docs
+      - URLS=[{"url":"./api-docs/identity/proto/identity.swagger.json","name":"Identity Service"},{"url":"./api-docs/resource/proto/resource.swagger.json","name":"Resource Service"}]
+    volumes:
+      - ./docs:/usr/share/nginx/html/api-docs:ro
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:8080/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
   envoy:
     image: envoyproxy/envoy:v1.33-latest
     container_name: envoy-proxy

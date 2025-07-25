@@ -7,6 +7,7 @@
 package identity
 
 import (
+	_ "github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-openapiv2/options"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
@@ -106,12 +107,16 @@ var File_identity_proto_identity_proto protoreflect.FileDescriptor
 
 const file_identity_proto_identity_proto_rawDesc = "" +
 	"\n" +
-	"\x1didentity/proto/identity.proto\x12\bidentity\x1a\x1cgoogle/api/annotations.proto\"\x0e\n" +
+	"\x1didentity/proto/identity.proto\x12\bidentity\x1a\x1cgoogle/api/annotations.proto\x1a.protoc-gen-openapiv2/options/annotations.proto\"\x0e\n" +
 	"\fLoginRequest\"%\n" +
 	"\rLoginResponse\x12\x14\n" +
 	"\x05token\x18\x01 \x01(\tR\x05token2c\n" +
 	"\vAuthService\x12T\n" +
-	"\x05Login\x12\x16.identity.LoginRequest\x1a\x17.identity.LoginResponse\"\x1a\x82\xd3\xe4\x93\x02\x14:\x01*\"\x0f/identity/loginB\x1fZ\x1dgithub.com/t3201v/ms/identityb\x06proto3"
+	"\x05Login\x12\x16.identity.LoginRequest\x1a\x17.identity.LoginResponse\"\x1a\x82\xd3\xe4\x93\x02\x14:\x01*\"\x0f/identity/loginBf\x92AD\x12\x1d\n" +
+	"\x14Resource Service API2\x051.0.0Z#\n" +
+	"!\n" +
+	"\n" +
+	"BearerAuth\x12\x13\b\x02\x1a\rAuthorization \x02Z\x1dgithub.com/t3201v/ms/identityb\x06proto3"
 
 var (
 	file_identity_proto_identity_proto_rawDescOnce sync.Once
