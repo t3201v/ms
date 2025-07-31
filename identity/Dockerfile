@@ -6,10 +6,10 @@ RUN go mod download
 COPY . .
 RUN go install ./cmd/***
 
-RUN wget -q -O /grpc_health_probe https://github.com/grpc-ecosystem/grpc-health-probe/releases/latest/download/grpc_health_probe-linux-amd64 && \
-    chmod +x /grpc_health_probe
+RUN #wget -q -O /grpc_health_probe https://github.com/grpc-ecosystem/grpc-health-probe/releases/latest/download/grpc_health_probe-linux-amd64 && \
+    chmod +x ./grpc_health_probe
 
 FROM alpine
 WORKDIR /app
 COPY --from=builder /app/bin .
-COPY --from=builder /grpc_health_probe /bin/grpc_health_probe
+COPY --from=builder /app/grpc_health_probe /bin/grpc_health_probe

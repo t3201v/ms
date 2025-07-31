@@ -85,25 +85,26 @@ services:
       timeout: 10s
       retries: 3
 
-  fluent-bit:
-    image: fluent/fluent-bit:3.2
-    container_name: fluent-bit-s3
-    networks:
-      - grpc-network
-    volumes:
-      - /var/lib/docker/containers:/var/lib/docker/containers:ro
-      - /var/run/docker.sock:/var/run/docker.sock:ro
-      - shared-logs:/var/log/app:ro
-      - ./fluent-bit.conf:/fluent-bit/etc/fluent-bit.conf:ro
-    environment:
-      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
-      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
-      - AWS_DEFAULT_REGION=${AWS_DEFAULT_REGION:-us-east-1}
-      - S3_BUCKET=${S3_BUCKET_NAME}
-    depends_on:
-      - identity-service
-      - resource-service
-    restart: unless-stopped
+#  fluent-bit:
+#    image: fluent/fluent-bit:3.2
+#    container_name: fluent-bit-s3
+#    networks:
+#      - grpc-network
+#    volumes:
+#      - /var/lib/docker/containers:/var/lib/docker/containers:ro
+#      - /var/run/docker.sock:/var/run/docker.sock:ro
+#      - shared-logs:/var/log/app:ro
+#      - ./fluent-bit.conf:/fluent-bit/etc/fluent-bit.conf:ro
+#    environment:
+#      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+#      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+#      - AWS_DEFAULT_REGION=${AWS_DEFAULT_REGION:-us-east-1}
+#      - S3_BUCKET=${S3_BUCKET_NAME}
+#      - S3_BUCKET_ENDPOINT=${S3_BUCKET_ENDPOINT}
+#    depends_on:
+#      - identity-service
+#      - resource-service
+#    restart: unless-stopped
 
   envoy:
     image: envoyproxy/envoy:v1.33-latest
