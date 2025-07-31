@@ -2,12 +2,13 @@ package api
 
 import (
 	"os"
+	"strings"
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
 )
 
-func issueJWT() (string, error) {
+func issueJWT(sub string, scopes []string) (string, error) {
 	privateKeyData, err := os.ReadFile("../private.key")
 	if err != nil {
 		return "", err
@@ -18,9 +19,10 @@ func issueJWT() (string, error) {
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodRS256, jwt.MapClaims{
-		"sub": "user123",
-		"iss": "https://my-issuer.example.com",
-		"exp": time.Now().Add(time.Hour).Unix(),
+		"sub":   sub,
+		"iss":   "https://ms-issuer.com",
+		"scope": strings.Join(scopes, " "),
+		"exp":   time.Now().Add(time.Hour).Unix(),
 	})
 
 	return token.SignedString(privateKey)

@@ -3,7 +3,6 @@ package api
 import (
 	"context"
 	"crypto/rsa"
-	"errors"
 	"fmt"
 	"os"
 	"strings"
@@ -11,17 +10,19 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/grpc-ecosystem/go-grpc-middleware/v2/interceptors"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
+	"google.golang.org/grpc/status"
 )
 
 var (
-	ErrMissingToken = errors.New("missing or invalid Authorization header")
+	ErrMissingToken = status.Error(codes.PermissionDenied, "missing or invalid Authorization header")
 
 	skipMethods = map[string]struct{}{
-		"/resource/say2":               {},
-		"/grpc.health.v1.Health/Check": {},
-		"/grpc.health.v1.Health/List":  {},
-		"/grpc.health.v1.Health/Watch": {},
+		"/resource.ResourceService/SayHello2":                            {},
+		"/grpc.health.v1.Health/Check":                                   {},
+		"/grpc.health.v1.Health/List":                                    {},
+		"/grpc.health.v1.Health/Watch":                                   {},
 		"/grpc.reflection.v1alpha.ServerReflection/ServerReflectionInfo": {},
 	}
 )

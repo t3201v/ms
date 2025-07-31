@@ -3,7 +3,6 @@ package api
 import (
 	"context"
 	"crypto/rsa"
-	"errors"
 	"fmt"
 	"os"
 	"strings"
@@ -11,18 +10,20 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/grpc-ecosystem/go-grpc-middleware/v2/interceptors"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
+	"google.golang.org/grpc/status"
 )
 
 var (
-	ErrMissingToken = errors.New("missing or invalid Authorization header")
+	ErrMissingToken = status.Error(codes.PermissionDenied, "missing or invalid Authorization header")
 
 	skipMethods = map[string]struct{}{
 		"/grpc.health.v1.Health/Check":                                   {},
 		"/grpc.health.v1.Health/List":                                    {},
 		"/grpc.health.v1.Health/Watch":                                   {},
 		"/grpc.reflection.v1alpha.ServerReflection/ServerReflectionInfo": {},
-		"/identity/login":                                                {},
+		"/identity.AuthService/Login":                                    {},
 	}
 )
 
@@ -53,7 +54,6 @@ func AuthInterceptor(publicKey *rsa.PublicKey) grpc.UnaryServerInterceptor {
 			return nil, ErrMissingToken
 		}
 
-		// Extract Authorization: Bearer <token>
 		authHeaders := md.Get("authorization")
 		if len(authHeaders) == 0 || !strings.HasPrefix(authHeaders[0], "Bearer ") {
 			return nil, ErrMissingToken
@@ -61,7 +61,6 @@ func AuthInterceptor(publicKey *rsa.PublicKey) grpc.UnaryServerInterceptor {
 
 		rawToken := strings.TrimPrefix(authHeaders[0], "Bearer ")
 
-		// Parse and verify the JWT
 		claims := jwt.MapClaims{}
 		token, err := jwt.ParseWithClaims(rawToken, claims, func(token *jwt.Token) (any, error) {
 			if _, ok := token.Method.(*jwt.SigningMethodRSA); !ok {

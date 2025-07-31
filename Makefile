@@ -2,6 +2,7 @@
 PROTO_DIR = .
 DESCRIPTOR_DIR = descriptor
 GOOGLEAPIS_DIR = ../googleapis
+OPENAPIV2_DIR = ../grpc-gateway
 
 # Create output directories
 $(DESCRIPTOR_DIR):
@@ -16,22 +17,24 @@ resource/gen:
 # Generate Go code and descriptor files
 proto-gen: identity/gen resource/gen $(DESCRIPTOR_DIR)
 	@echo "Generating protos for identity/"
-	protoc -I$(GOOGLEAPIS_DIR) -I. \
+	protoc -I$(GOOGLEAPIS_DIR) -I$(OPENAPIV2_DIR) -I. \
 		--go_out=identity/gen \
 		--go_opt=paths=source_relative \
 		--go-grpc_out=identity/gen \
 		--go-grpc_opt=paths=source_relative \
+		--openapiv2_out ./docs \
 		--descriptor_set_out=$(DESCRIPTOR_DIR)/identity.pb \
 		--include_imports \
 		--include_source_info \
 		identity/proto/identity.proto
 
 	@echo "Generating protos for resource/"
-	protoc -I$(GOOGLEAPIS_DIR) -I. \
+	protoc -I$(GOOGLEAPIS_DIR) -I$(OPENAPIV2_DIR) -I. \
 		--go_out=resource/gen \
 		--go_opt=paths=source_relative \
 		--go-grpc_out=resource/gen \
 		--go-grpc_opt=paths=source_relative \
+		--openapiv2_out ./docs \
 		--descriptor_set_out=$(DESCRIPTOR_DIR)/resource.pb \
 		--include_imports \
 		--include_source_info \
@@ -40,14 +43,14 @@ proto-gen: identity/gen resource/gen $(DESCRIPTOR_DIR)
 # Generate only descriptor files (for Envoy)
 descriptors: $(DESCRIPTOR_DIR)
 	@echo "Generating descriptor for identity service"
-	protoc -I$(GOOGLEAPIS_DIR) -I. \
+	protoc -I$(GOOGLEAPIS_DIR) -I$(OPENAPIV2_DIR) -I. \
 		--descriptor_set_out=$(DESCRIPTOR_DIR)/identity.pb \
 		--include_imports \
 		--include_source_info \
 		identity/proto/identity.proto
 
 	@echo "Generating descriptor for resource service"
-	protoc -I$(GOOGLEAPIS_DIR) -I. \
+	protoc -I$(GOOGLEAPIS_DIR) -I$(OPENAPIV2_DIR) -I. \
 		--descriptor_set_out=$(DESCRIPTOR_DIR)/resource.pb \
 		--include_imports \
 		--include_source_info \
@@ -56,7 +59,7 @@ descriptors: $(DESCRIPTOR_DIR)
 # Generate combined descriptor file
 combined-descriptor: $(DESCRIPTOR_DIR)
 	@echo "Generating combined descriptor"
-	protoc -I$(GOOGLEAPIS_DIR) -I. \
+	protoc -I$(GOOGLEAPIS_DIR) -I$(OPENAPIV2_DIR) -I. \
 		--descriptor_set_out=$(DESCRIPTOR_DIR)/services.pb \
 		--include_imports \
 		--include_source_info \
@@ -71,6 +74,7 @@ clean:
 install-tools:
 	go install google.golang.org/protobuf/cmd/protoc-gen-go@latest
 	go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@latest
+	go install github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-openapiv2@latest
 	go install github.com/pressly/goose/v3/cmd/goose@latest
 	go install github.com/sqlc-dev/sqlc/cmd/sqlc@latest
 
