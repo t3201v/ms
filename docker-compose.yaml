@@ -1,0 +1,158 @@
+services:
+  identity-service:
+    build:
+      context: ./identity
+      dockerfile: Dockerfile
+    container_name: identity-service
+    ports:
+      - "9090:9090"
+    networks:
+      - grpc-network
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - ./private.key:/private.key:ro
+      - ./public.key:/public.key:ro
+      - shared-logs:/var/log/app
+    env_file:
+      - ./.env
+    environment:
+      - PORT=:9090
+      - SERVICE_NAME=identity
+      - RESOURCE_URL=resource-service:9090
+      - IDENTITY_DATABASE_URL=postgres://postgres:postgres@db:5432/ms_identity
+    command: sh -c "./entrypoint"
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    healthcheck:
+      test: ["CMD", "grpc_health_probe", "-addr=:9090"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  resource-service:
+    build:
+      context: ./resource
+      dockerfile: Dockerfile
+    container_name: resource-service
+    ports:
+      - "9091:9090"
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - grpc-network
+    volumes:
+      - ./public.key:/public.key:ro
+      - shared-logs:/var/log/app
+    env_file:
+      - ./.env
+    environment:
+      - PORT=:9090
+      - SERVICE_NAME=resource
+      - RESOURCE_DATABASE_URL=postgres://postgres:postgres@db:5432/ms_resource
+    command: sh -c "./entrypoint"
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    healthcheck:
+      test: ["CMD", "grpc_health_probe", "-addr=:9090"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  swagger-ui:
+    image: swaggerapi/swagger-ui:latest
+    container_name: swagger-ui
+    ports:
+      - "8081:8080"
+    networks:
+      - grpc-network
+    environment:
+      - BASE_URL=/docs
+      - URLS=[{"url":"./api-docs/identity/proto/identity.swagger.json","name":"Identity Service"},{"url":"./api-docs/resource/proto/resource.swagger.json","name":"Resource Service"}]
+    volumes:
+      - ./docs:/usr/share/nginx/html/api-docs:ro
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:8080/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+#  fluent-bit:
+#    image: fluent/fluent-bit:3.2
+#    container_name: fluent-bit-s3
+#    networks:
+#      - grpc-network
+#    volumes:
+#      - /var/lib/docker/containers:/var/lib/docker/containers:ro
+#      - /var/run/docker.sock:/var/run/docker.sock:ro
+#      - shared-logs:/var/log/app:ro
+#      - ./fluent-bit.conf:/fluent-bit/etc/fluent-bit.conf:ro
+#    environment:
+#      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+#      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+#      - AWS_DEFAULT_REGION=${AWS_DEFAULT_REGION:-us-east-1}
+#      - S3_BUCKET=${S3_BUCKET_NAME}
+#      - S3_BUCKET_ENDPOINT=${S3_BUCKET_ENDPOINT}
+#    depends_on:
+#      - identity-service
+#      - resource-service
+#    restart: unless-stopped
+
+  envoy:
+    image: envoyproxy/envoy:v1.33-latest
+    container_name: envoy-proxy
+    ports:
+      - "8080:8080"
+      - "9901:9901"
+    networks:
+      - grpc-network
+    volumes:
+      - ./descriptor:/etc/envoy/descriptors:ro
+      - ./envoy.yaml:/etc/envoy/envoy.yaml:ro
+      - ./identity/jwks.json:/etc/envoy/keys/jwks.json:ro
+    depends_on:
+      identity-service:
+        condition: service_healthy
+      resource-service:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:9901/ready"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  db:
+    image: postgres:15
+    container_name: identity-db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: postgres
+    ports:
+      - "5432:5432"
+    networks:
+      - grpc-network
+    volumes:
+      - ./pg_data:/var/lib/postgresql/data
+      - ./init_scripts:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U postgres" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+networks:
+  grpc-network:
+    driver: bridge
+
+volumes:
+  shared-logs:
+    driver: local
